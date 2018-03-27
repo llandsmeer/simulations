@@ -3,6 +3,8 @@
 #include <math.h>
 #include <time.h>
 
+// #define BOUNDED
+
 typedef struct {
   double x;
   double y;
@@ -32,6 +34,10 @@ static vec c(double x, double y) {
 
 static const double bound = 5;
 
+static const double LJ_S = 0.1;
+static const double LJ_E = 20;
+static const double MAXSPEED = 5;
+
 static vec scal(double a, vec x) {
   return c(a*x.x, a*x.y);
 }
@@ -55,6 +61,7 @@ static vec diff(vec a, vec b) {
 static vec sdiff(vec a, vec b) {
   vec d1, d2, d3, d4, d5, d6, d7, d8, d9;
   d1 = diff(a, b);
+#ifdef BOUNDED
   d2 = diff(a, xpab(b, bound, 0));
   d3 = diff(a, xpab(b, 0, bound));
   d4 = diff(a, xpab(b, bound, bound));
@@ -71,15 +78,23 @@ static vec sdiff(vec a, vec b) {
   d1 = nrm2(d1) < nrm2(d7) ? d1 : d7;
   d1 = nrm2(d1) < nrm2(d8) ? d1 : d8;
   d1 = nrm2(d1) < nrm2(d9) ? d1 : d9;
+#endif
   return d1;
 }
 
+static double force_lj(double r2) {
+  double sr6 = pow((LJ_S*LJ_S)/r2, 3);
+  double f =  24. * LJ_E / pow(r2, 0.5) * (2*sr6*sr6 - sr6);
+  if (f < -10000) f = -10000;
+  if (f > 10000) f = 10000;
+  return f;
+}
 
 static vec force(double k, part a, part b) {
   vec r = sdiff(a.p, b.p);
   double r2 = nrm2(r);
   if (r2 < .01) return c(0, 0);
-  return scal(k*a.c*b.c/pow(r2, 3.0/2.0), r);
+  return scal(force_lj(r2)+k*a.c*b.c/pow(r2, 3.0/2.0), r);
 }
 
 static double rem(double x, double y) {
@@ -104,14 +119,25 @@ void update_a(sym * s) {
 }
 
 static vec bounded(vec p) {
+#ifdef BOUNDED
   return c(rem(p.x, bound), rem(p.y, bound));
+#else
+  return p;
+#endif
 }
 
 static void update(sym * s) {
   size_t i;
+  double v;
   update_a(s);
   for (i = 0; i < s->count; i++) {
     s->parts[i].v = axpy(s->dt, s->parts[i].a, s->parts[i].v);
+    v = pow(nrm2(s->parts[i].v), 0.5);
+    if (v > MAXSPEED) {
+      s->parts[i].v = scal(MAXSPEED/v, s->parts[i].v);
+    } else {
+      s->parts[i].v = scal(0.9998, s->parts[i].v);
+    }
     s->parts[i].p = bounded(axpy(s->dt, s->parts[i].v, s->parts[i].p));
   }
 }
@@ -119,21 +145,39 @@ static void update(sym * s) {
 static void psym(sym * s) {
   size_t i;
   for (i = 0; i < s->count; i++) {
-    printf("%.2f %.4f %5.2f%c", s->parts[i].c, s->parts[i].p.x, s->parts[i].p.y,
+    printf("%.2f %.4f %.4f%c", s->parts[i].c, s->parts[i].p.x, s->parts[i].p.y,
            i == s->count-1 ? '\n' : ' ');
   }
 }
 
 static void setup_random(sym * s) {
   srand48(time(0));
-  size_t i;
+  size_t i, j;
+  int placed, fails = 0;
   for (i = 0; i < s->count; i++) {
-    s->parts[i].p = scal(bound, c(drand48(), drand48()));
+    placed = 0;
+    while (placed == 0) {
+        s->parts[i].p = scal(bound, c(drand48(), drand48()));
+        placed = 1;
+        for (j = 0; j < i; j++) { 
+          if (nrm2(sdiff(s->parts[i].p, s->parts[j].p)) < 2*LJ_S*LJ_S) {
+            placed = 0;
+          }
+        }
+        if (placed == 0) {
+          fails += 1;
+        }
+        if (fails > 10000) {
+          fprintf(stderr, "too crowded\n");
+          exit(1);
+        }
+    }
     s->parts[i].v = c(0, 0);
     s->parts[i].a = c(0, 0);
     s->parts[i].c = drand48()*2.0 - 1.0;
     s->parts[i].m = 1;
   }
+  fprintf(stderr, "%d\n", fails);
 }
 
 static void setup_lattice(sym * s){
@@ -144,7 +188,7 @@ static void setup_lattice(sym * s){
       s->parts[i*side+j].p = c(((double)i+drand48()*0.1)*sp+sp/2, ((double)j+drand48()*0.1)*sp+sp/2);
       s->parts[i*side+j].v = c(0, 0);
       s->parts[i*side+j].a = c(0, 0);
-      s->parts[i*side+j].c = 1; ((i & 1) == 0 ? 1 : -1) * ((j & 1) == 0 ? 1 : -1);
+      s->parts[i*side+j].c = ((i & 1) == 0 ? 1 : -1) * ((j & 1) == 0 ? 1 : -1);
       s->parts[i*side+j].m = 1;
     }
   }
@@ -153,8 +197,8 @@ static void setup_lattice(sym * s){
 int main(int argc, char ** argv) {
   sym s;
   s.count = argc > 1 ? atoi(argv[1]) : 10;
-  s.dt = argc > 2 ? atof(argv[2]) : 0.1;
-  s.k = -0.5;
+  s.dt = argc > 2 ? atof(argv[2]) : 0.02;
+  s.k = -0.3;
   s.parts = malloc(sizeof(part) * s.count);
   if (!s.parts) {
     return -2;

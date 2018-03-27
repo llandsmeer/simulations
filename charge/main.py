@@ -30,7 +30,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_xlim([-1, 2])
 ax.set_ylim([-1, 2])
-b =5
+b = 5
 
 ax.set_xlim([0, b])
 ax.set_ylim([0, b])
