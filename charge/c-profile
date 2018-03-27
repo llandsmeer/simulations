@@ -1,0 +1,5 @@
+set -e
+gcc main.c -ffast-math -O2 -lm -g -DPROFILE -DBOUNDED
+valgrind --tool=callgrind --callgrind-out-file=profile.out ./a.out 
+gprof2dot -f callgrind profile.out | dot -Tsvg -o profile.svg
+xdg-open profile.svg

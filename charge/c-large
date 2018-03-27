@@ -1,0 +1,2 @@
+gcc -DBOUND=${2:-10} -DBOUNDED -Wall -Ofast main.c -lm && ./a.out ${1:-100} 0.01 |  python main.py
+ 

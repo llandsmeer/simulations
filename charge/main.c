@@ -4,6 +4,9 @@
 #include <time.h>
 
 // #define BOUNDED
+// #define NEUTRAL
+// #define PROFILE
+// #define BOUND=5
 
 typedef struct {
   double x;
@@ -32,7 +35,12 @@ static vec c(double x, double y) {
   return r;
 }
 
-static const double bound = 5;
+static const double bound =
+#ifdef BOUND
+  BOUND;
+#else
+  5;
+#endif
 
 static const double LJ_S = 0.1;
 static const double LJ_E = 20;
@@ -82,9 +90,13 @@ static vec sdiff(vec a, vec b) {
   return d1;
 }
 
+static double power(double a, double b) {
+  return pow(a, b);
+}
+
 static double force_lj(double r2) {
-  double sr6 = pow((LJ_S*LJ_S)/r2, 3);
-  double f =  24. * LJ_E / pow(r2, 0.5) * (2*sr6*sr6 - sr6);
+  double sr6 = power((LJ_S*LJ_S)/r2, 3);
+  double f =  24. * LJ_E / power(r2, 0.5) * (2*sr6*sr6 - sr6);
   if (f < -10000) f = -10000;
   if (f > 10000) f = 10000;
   return f;
@@ -94,7 +106,7 @@ static vec force(double k, part a, part b) {
   vec r = sdiff(a.p, b.p);
   double r2 = nrm2(r);
   if (r2 < .01) return c(0, 0);
-  return scal(force_lj(r2)+k*a.c*b.c/pow(r2, 3.0/2.0), r);
+  return scal(force_lj(r2)+k*a.c*b.c/power(r2, 3.0/2.0), r);
 }
 
 static double rem(double x, double y) {
@@ -132,7 +144,7 @@ static void update(sym * s) {
   update_a(s);
   for (i = 0; i < s->count; i++) {
     s->parts[i].v = axpy(s->dt, s->parts[i].a, s->parts[i].v);
-    v = pow(nrm2(s->parts[i].v), 0.5);
+    v = power(nrm2(s->parts[i].v), 0.5);
     if (v > MAXSPEED) {
       s->parts[i].v = scal(MAXSPEED/v, s->parts[i].v);
     } else {
@@ -182,7 +194,9 @@ static void setup_random(sym * s) {
     // s->parts[i].c = drand48()*2.0 - 1.0;
     s->parts[i].m = 1;
   }
+#ifndef PROFILE
   fprintf(stderr, "%d\n", fails);
+#endif
 }
 
 static void setup_lattice(sym * s){
@@ -207,6 +221,9 @@ int main(int argc, char ** argv) {
 #ifndef BOUNDED
   printf("nonbounded\n");
 #endif
+#ifdef BOUND
+  printf("bound %f\n", bound);
+#endif
   sym s;
   int i = 1;
   s.count = argc > 1 ? atoi(argv[1]) : 99;
@@ -221,12 +238,19 @@ int main(int argc, char ** argv) {
   } else {
     setup_random(&s);
   }
+#ifndef PROFILE
   psym(&s);
   for (;;) {
+#else
+    while (i < 100) {
+#endif
     update(&s);
     if (i < 100 ? 1 == 1 : i < 1000 ? i % 10 == 0 : i % 200 == 0) {
+#ifndef PROFILE
       psym(&s);
+#endif
     }
     i += 1;
   }
+  psym(&s);
 }

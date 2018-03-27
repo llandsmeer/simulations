@@ -11,6 +11,10 @@ def read():
             b = 100
             ax.set_xlim([-b, b])
             ax.set_ylim([-b, b])
+        elif i.startswith('bound'):
+            b = float(i.split()[1])
+            ax.set_xlim([0, b])
+            ax.set_ylim([0, b])
         i = input()
         i = iter(map(float, i.split()))
     except EOFError:
@@ -46,7 +50,7 @@ draw1, = ax.plot(x1, y1, 'o', c='red');
 draw2, = ax.plot(x2, y2, 'o', c='blue');
 
 try:
-    while True:
+    while plt.fignum_exists(fig.number):
         x1, y1, x2, y2 = read()
         draw1.set_xdata(x1)
         draw1.set_ydata(y1)
