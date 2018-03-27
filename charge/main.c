@@ -174,7 +174,11 @@ static void setup_random(sym * s) {
     }
     s->parts[i].v = c(0, 0);
     s->parts[i].a = c(0, 0);
+#ifdef NEUTRAL
+    s->parts[i].c = 0;
+#else
     s->parts[i].c = i % 2 == 0 ? -0.4 : 0.4;
+#endif
     // s->parts[i].c = drand48()*2.0 - 1.0;
     s->parts[i].m = 1;
   }
@@ -189,7 +193,11 @@ static void setup_lattice(sym * s){
       s->parts[i*side+j].p = c(((double)i+drand48()*0.1)*sp+sp/2, ((double)j+drand48()*0.1)*sp+sp/2);
       s->parts[i*side+j].v = c(0, 0);
       s->parts[i*side+j].a = c(0, 0);
+#ifdef NEUTRAL
+      s->parts[i*side+j].c = 0;
+#else
       s->parts[i*side+j].c = ((i & 1) == 0 ? 1 : -1) * ((j & 1) == 0 ? 1 : -1);
+#endif
       s->parts[i*side+j].m = 1;
     }
   }
