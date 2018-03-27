@@ -6,7 +6,13 @@ plt.ion()
 
 def read():
     try:
-        i = iter(map(float, input().split()))
+        i = input()
+        if i == 'nonbounded':
+            b = 100
+            ax.set_xlim([-b, b])
+            ax.set_ylim([-b, b])
+        i = input()
+        i = iter(map(float, i.split()))
     except EOFError:
         exit()
     x1 = []

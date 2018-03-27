@@ -1,2 +1,2 @@
-gcc -DBOUNDED -Wall -Ofast main.c -lm && ./a.out 400 0.01 | awk 'NR % 10 == 0' |  python main.py
+gcc -DBOUNDED -Wall -Ofast main.c -lm && ./a.out ${1:-70} 0.01 |  python main.py
  

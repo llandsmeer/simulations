@@ -160,7 +160,7 @@ static void setup_random(sym * s) {
         s->parts[i].p = scal(bound, c(drand48(), drand48()));
         placed = 1;
         for (j = 0; j < i; j++) { 
-          if (nrm2(sdiff(s->parts[i].p, s->parts[j].p)) < 2*LJ_S*LJ_S) {
+          if (nrm2(sdiff(s->parts[i].p, s->parts[j].p)) < 4*LJ_S*LJ_S) {
             placed = 0;
           }
         }
@@ -174,7 +174,8 @@ static void setup_random(sym * s) {
     }
     s->parts[i].v = c(0, 0);
     s->parts[i].a = c(0, 0);
-    s->parts[i].c = drand48()*2.0 - 1.0;
+    s->parts[i].c = i % 2 == 0 ? -0.4 : 0.4;
+    // s->parts[i].c = drand48()*2.0 - 1.0;
     s->parts[i].m = 1;
   }
   fprintf(stderr, "%d\n", fails);
@@ -195,9 +196,13 @@ static void setup_lattice(sym * s){
 }
 
 int main(int argc, char ** argv) {
+#ifndef BOUNDED
+  printf("nonbounded\n");
+#endif
   sym s;
-  s.count = argc > 1 ? atoi(argv[1]) : 10;
-  s.dt = argc > 2 ? atof(argv[2]) : 0.02;
+  int i = 1;
+  s.count = argc > 1 ? atoi(argv[1]) : 99;
+  s.dt = argc > 2 ? atof(argv[2]) : 0.01;
   s.k = -0.3;
   s.parts = malloc(sizeof(part) * s.count);
   if (!s.parts) {
@@ -211,6 +216,9 @@ int main(int argc, char ** argv) {
   psym(&s);
   for (;;) {
     update(&s);
-    psym(&s);
+    if (i < 100 ? 1 == 1 : i < 1000 ? i % 10 == 0 : i % 200 == 0) {
+      psym(&s);
+    }
+    i += 1;
   }
 }

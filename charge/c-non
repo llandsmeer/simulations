@@ -1,0 +1,2 @@
+gcc -Wall -Ofast main.c -lm && ./a.out ${1:-99} 0.01 |  python main.py
+ 
