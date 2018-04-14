@@ -11,11 +11,11 @@ Entrypoints:
  - `c-non [particles=99]`
  - `c-profile`: run callgrind and produce graph
  
-<img src=charge.png style="width: 5cm">
+<img src=charge.png width=500>
 
 # Ising
 
 Pure OpenGL ising model.
 Contains error.
 
-<img src=ising.png style="width: 5cm">
+<img src=ising.png width=500>
