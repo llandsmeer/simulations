@@ -19,3 +19,9 @@ Pure OpenGL ising model.
 Contains error.
 
 <img src=ising.png width=500>
+
+# Mandel
+
+Mandelbrot renderer, with code from the Ising model.
+
+<img src=mandel.png width=500>

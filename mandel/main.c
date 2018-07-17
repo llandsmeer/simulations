@@ -15,9 +15,10 @@ typedef struct {
 } ShaderSource;
 
 static const int W = 300, H = 300;
-static const float MOVESPEED = 0.05;
-static GLuint drawProgram, vao, zoomAttr, offxAttr, offyAttr;
-static float zoom = 1.0, offx = 0.0, offy = 0.0;
+static int niter = 256;
+static const float MOVESPEED = 0.1;
+static GLuint drawProgram, vao, zoomAttr, offxAttr, offyAttr, niterAttr, ratioAttr;
+static float zoom = 1.0, offx = 0.0, offy = 0.0, ratio = 1.0;
 
 static GLuint elements[] = {0, 1, 2, 1, 2, 3};
 static float vertices[] = {
@@ -37,9 +38,10 @@ static ShaderSource vertexShaderSource = {
     "uniform float zoom;"
     "uniform float offx;"
     "uniform float offy;"
+    "uniform float ratio;"
     "void main() {"
       "gl_Position = vec4(position, 0.0, 1.0);"
-      "coord = vec2(position.x*2.0/zoom+offx, position.y*2.0/zoom+offy);"
+      "coord = vec2(position.x/ratio*2.0/zoom+offx, position.y*2.0/zoom+offy);"
     "}"
 };
 
@@ -50,6 +52,7 @@ static ShaderSource fragmentShaderSource = {
     "#version 150 core\n"
     "in vec2 coord;"
     "out vec4 outColor;"
+    "uniform int niter;"
     "void main() {"
       "float a = 0;"
       "float b = 0;"
@@ -58,14 +61,14 @@ static ShaderSource fragmentShaderSource = {
       "float an;"
       "float l2;"
       "int i = 0;"
-      "while (i < 256 && a*a + b*b < 2*2) {"
+      "while (i < niter && a*a + b*b < 2*2) {"
         "an = a*a - b*b + u;"
         "b = 2*a*b + v;"
         "a = an;"
         "i += 1;"
       "}"
-      "float norm = float(i) / 256.0;"
-      "outColor = vec4(norm, norm, norm, 1.0);"
+      "float norm = float(i) / float(niter);"
+      "outColor = vec4(1-sin(norm*2*3.14)/2-0.5, norm, 1-cos(norm*2*3.14)/2-0.5, 1.0);"
     "}"
 };
 
@@ -128,6 +131,8 @@ static void setup() {
   zoomAttr = glGetUniformLocation(drawProgram, "zoom");
   offxAttr = glGetUniformLocation(drawProgram, "offx");
   offyAttr = glGetUniformLocation(drawProgram, "offy");
+  niterAttr = glGetUniformLocation(drawProgram, "niter");
+  ratioAttr = glGetUniformLocation(drawProgram, "ratio");
 }
 
 static void errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
@@ -147,6 +152,7 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
   window = glfwCreateWindow(W, H, "main", 0, 0);
   glfwMakeContextCurrent(window);
   glewInit();
@@ -159,11 +165,14 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
+    ratio = (float)windowHeight / (float)windowWidth;
     // begin draw
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform1f(zoomAttr, zoom);
     glUniform1f(offxAttr, offx);
     glUniform1f(offyAttr, offy);
+    glUniform1i(niterAttr, niter);
+    glUniform1f(ratioAttr, ratio);
     glBindVertexArray(vao);
     glActiveTexture(GL_TEXTURE0);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -177,11 +186,19 @@ int main() {
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) offy -= MOVESPEED/zoom;
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) offx += MOVESPEED/zoom;
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) offx -= MOVESPEED/zoom;
+    if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS) niter += 5;
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+      niter -= 5;
+      if (niter < 5) {
+        niter = 5;
+      }
+    }
     if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) zoom *= 1.1;
     if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) zoom /= 1.1;
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
       offx = offy = 0;
       zoom = 1.0;
+      niter = 256;
     }
   }
   glfwTerminate();

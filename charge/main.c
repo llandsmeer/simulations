@@ -7,6 +7,7 @@
 // #define NEUTRAL
 // #define PROFILE
 // #define BOUND=5
+// #define MIXED
 
 typedef struct {
   double x;
@@ -148,7 +149,7 @@ static void update(sym * s) {
     if (v > MAXSPEED) {
       s->parts[i].v = scal(MAXSPEED/v, s->parts[i].v);
     } else {
-      s->parts[i].v = scal(0.9998, s->parts[i].v);
+      s->parts[i].v = scal(0.998, s->parts[i].v);
     }
     s->parts[i].p = bounded(axpy(s->dt, s->parts[i].v, s->parts[i].p));
   }
@@ -189,7 +190,11 @@ static void setup_random(sym * s) {
 #ifdef NEUTRAL
     s->parts[i].c = 0;
 #else
+#ifdef MIXED
+    s->parts[i].c = i % 5 <= 2 ? -0.4 : (i % 5 == 3 ? 0:0.4);
+#else
     s->parts[i].c = i % 2 == 0 ? -0.4 : 0.4;
+#endif
 #endif
     // s->parts[i].c = drand48()*2.0 - 1.0;
     s->parts[i].m = 1;
