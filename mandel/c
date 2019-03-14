@@ -1,1 +1,1 @@
-gcc main.c -lGL -lglfw -lGLEW -Wall -Werror -Wextra && ./a.out
+gcc main.c -lm -lGL -lglfw -lGLEW -Wall -Werror -Wextra && ./a.out

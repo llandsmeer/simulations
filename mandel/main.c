@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <math.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -145,6 +146,8 @@ int main() {
   GLFWwindow * window;
   GLuint unusedIds = 0;
   int windowWidth, windowHeight;
+  double currentTime, prevTime = glfwGetTime();
+  double speedFactor = 0.0;
   if (!glfwInit()) {
     return EXIT_FAILURE;
   }
@@ -163,6 +166,9 @@ int main() {
   assert((W & 1) == 0 && (H & 1) == 0);
   setup();
   while (!glfwWindowShouldClose(window)) {
+    currentTime = glfwGetTime();
+    speedFactor = (currentTime-prevTime) * 50.;
+    printf("%f\n", speedFactor);
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
     ratio = (float)windowHeight / (float)windowWidth;
@@ -182,24 +188,29 @@ int main() {
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
       glfwSetWindowShouldClose(window, GL_TRUE);
     }
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) offy += MOVESPEED/zoom;
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) offy -= MOVESPEED/zoom;
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) offx += MOVESPEED/zoom;
-    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) offx -= MOVESPEED/zoom;
-    if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS) niter += 5;
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) offy += MOVESPEED/zoom * speedFactor;
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) offy -= MOVESPEED/zoom * speedFactor;
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) offx += MOVESPEED/zoom * speedFactor;
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) offx -= MOVESPEED/zoom * speedFactor;
+    int d_niter = speedFactor * 5;
+    if (d_niter == 0) {
+      d_niter = 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS) niter += d_niter;
     if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-      niter -= 5;
+      niter -= d_niter;
       if (niter < 5) {
         niter = 5;
       }
     }
-    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) zoom *= 1.1;
-    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) zoom /= 1.1;
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) zoom *= pow(1.1, speedFactor);
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) zoom /= pow(1.1, speedFactor);
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
       offx = offy = 0;
       zoom = 1.0;
       niter = 256;
     }
+    prevTime = currentTime;
   }
   glfwTerminate();
   return EXIT_SUCCESS;

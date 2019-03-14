@@ -15,7 +15,7 @@ typedef struct {
 } ShaderSource;
 
 static GLuint elements[] = {0, 1, 2, 1, 2, 3};
-static const int W = 300, H = 300;
+static const int W = 1000, H = 1000;
 static GLuint drawProgram, initProgram, updateProgramEven, updateProgramOdd, vao, tex;
 static GLuint seedAttrEven, seedAttrOdd, betaAttrEven, betaAttrOdd, fieldAttrEven, fieldAttrOdd;
 static float beta = 0.0, field = 0.0;
@@ -260,6 +260,7 @@ static void errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity
 int main() {
   GLFWwindow * window;
   GLuint unusedIds = 0;
+  double speedFactor, currentTime, prevTime = glfwGetTime();
   int windowWidth, windowHeight, i = 0;
   if (!glfwInit()) {
     return EXIT_FAILURE;
@@ -279,6 +280,8 @@ int main() {
   assert((W & 1) == 0 && (W & 1) == 0);
   setup();
   while (!glfwWindowShouldClose(window)) {
+    currentTime = glfwGetTime();
+    speedFactor = (currentTime-prevTime) * 50.;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
     loop(i++);
@@ -289,28 +292,28 @@ int main() {
     }
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-      beta += 0.1;
+      beta += 0.1 * speedFactor;
       if (beta > 10) {
         beta = 10;
       }
     }
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-      beta -= 0.1;
+      beta -= 0.1 * speedFactor;
       if (beta < 0) {
         beta = 0;
       }
     }
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-      field += 0.1;
+      field += 0.1 * speedFactor;
       if (field > 2) {
         field = 2;
       }
     }
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-      field -= 0.1;
+      field -= 0.1 * speedFactor;
       if (field < -2) {
         field = -2;
       }
@@ -319,6 +322,7 @@ int main() {
       beta = 0;
       field = 0;
     }
+    prevTime = currentTime;
   }
   glfwTerminate();
   return EXIT_SUCCESS;
