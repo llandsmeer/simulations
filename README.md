@@ -10,7 +10,7 @@ Entrypoints:
  - `c-neutral [particles] [size]`
  - `c-non [particles=99]`
  - `c-profile`: run callgrind and produce graph
- 
+
 <img src=charge.png width=500>
 
 # Ising
@@ -25,3 +25,24 @@ Contains error.
 Mandelbrot renderer, with code from the Ising model.
 
 <img src=mandel.png width=500>
+
+# ExMedia
+
+Really simple excitable media simulations.
+
+### Run
+
+```sh
+python3 ./simple.py
+python3 ./noisy.py
+```
+
+Quit using Esc. Reset using Q. Click to excite cells.
+
+![Propagating Waves](./exmedia.png)
+
+### Dependencies
+
+ - PySDL2 (`pip3 install pysdl2`)
+ - Numba (optional with a one line code change)
+ - Numpy
