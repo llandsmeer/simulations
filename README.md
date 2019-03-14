@@ -39,7 +39,7 @@ python3 ./noisy.py
 
 Quit using Esc. Reset using Q. Click to excite cells.
 
-![Propagating Waves](./exmedia.png)
+<img src=exmedia.png width=500>
 
 ### Dependencies
 
