@@ -46,3 +46,17 @@ Quit using Esc. Reset using Q. Click to excite cells.
  - PySDL2 (`pip3 install pysdl2`)
  - Numba (optional with a one line code change)
  - Numpy
+
+# CO
+
+Originally a coupled oscilator simulation, now coupled models of neurons on a grid with diffusion term for interactions.
+Model parameterization from [EM Izhikevich](https://www.izhikevich.org/publications/spnet.htm).
+Should be easily configurable to solve other PDEs.
+
+<img src=co.png width=500>
+
+### Run
+
+```
+sh c
+```

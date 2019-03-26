@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -ex
+
+gcc simple.c -lm -lSDL2 -lSDL2main -lSDL2_gfx -O3
+./a.out
