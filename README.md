@@ -25,9 +25,9 @@ which under 0 field is not noticable, but creates artifacts under high fields.
 
 ### Control
 
-<kbd>Up</kbd>/<kbd>Down</kbd> / <kbd>K</kbd>/<kbd>J</kbd> Control temperature
-<kbd>Left</kbd>/<kbd>Right</kbd> / <kbd>H</kbd>/<kbd>L</kbd> Control external field
-<kbd>q</kbd> Quit
+<kbd>Up</kbd>/<kbd>Down</kbd> / <kbd>K</kbd>/<kbd>J</kbd> Control temperature<br>
+<kbd>Left</kbd>/<kbd>Right</kbd> / <kbd>H</kbd>/<kbd>L</kbd> Control external field<br>
+<kbd>q</kbd> Quit<br>
 <kbd>0</kbd> Reset external field and beta to 0
 
 Change temperature with up/down
@@ -48,9 +48,9 @@ GPU Mandelbrot renderer, based on code from the Ising model.
 
 ### Control
 
-<kbd>Up</kbd>/<kbd>Down</kbd> / <kbd>K</kbd>/<kbd>J</kbd> Control temperature
-<kbd>Left</kbd>/<kbd>Right</kbd> / <kbd>H</kbd>/<kbd>L</kbd> Control external field
-<kbd>q</kbd> Quit
+<kbd>Up</kbd>/<kbd>Down</kbd> / <kbd>K</kbd>/<kbd>J</kbd> Control temperature<br>
+<kbd>Left</kbd>/<kbd>Right</kbd> / <kbd>H</kbd>/<kbd>L</kbd> Control external field<br>
+<kbd>q</kbd> Quit<br>
 <kbd>0</kbd> Reset external field and beta to 0
 
 ### Run
@@ -59,8 +59,8 @@ Depends on `libglfw3-dev`, `libgl1-mesa-dev`, `libglu1-mesa-dev`.
 
 `sh c`
 
-<kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> Move
-<kbd>+</kbd>/<kbd>-</kbd> Zoom
+<kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> Move<br>
+<kbd>+</kbd>/<kbd>-</kbd> Zoom<br>
 <kbd>Q</kbd> Quit
 
 # ExMedia
