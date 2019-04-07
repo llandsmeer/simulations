@@ -20,8 +20,8 @@ Depends on `python3-matplotlib`, working C compiler.
 # Ising
 
 Pure OpenGL ising model.
-Contains small error. The shader updates the spin field **in place**,
-which under 0 field is not noticable.
+Contains small error. The shader updates the spin field *in place*,
+which under 0 field is not noticable, but creates artifacts under high fields.
 
 ### Control
 
