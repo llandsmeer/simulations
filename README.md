@@ -46,18 +46,13 @@ GPU Mandelbrot renderer, based on code from the Ising model.
 
 <img src=mandel.png width=500>
 
-### Control
-
-<kbd>Up</kbd>/<kbd>Down</kbd> / <kbd>K</kbd>/<kbd>J</kbd> Control temperature<br>
-<kbd>Left</kbd>/<kbd>Right</kbd> / <kbd>H</kbd>/<kbd>L</kbd> Control external field<br>
-<kbd>q</kbd> Quit<br>
-<kbd>0</kbd> Reset external field and beta to 0
-
 ### Run
 
 Depends on `libglfw3-dev`, `libgl1-mesa-dev`, `libglu1-mesa-dev`.
 
 `sh c`
+
+### Control
 
 <kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> Move<br>
 <kbd>+</kbd>/<kbd>-</kbd> Zoom<br>
