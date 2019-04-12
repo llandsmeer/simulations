@@ -18,8 +18,8 @@ typedef struct {
 static const int W = 300, H = 300;
 static int niter = 256;
 static const float MOVESPEED = 0.1;
-static GLuint drawProgram, vao, zoomAttr, offxAttr, offyAttr, niterAttr, ratioAttr;
-static float zoom = 1.0, offx = 0.0, offy = 0.0, ratio = 1.0;
+static GLuint drawProgram, vao, zoomAttr, offxAttr, offyAttr, niterAttr, ratioAttr, warpAttr;
+static float zoom = 1.0, offx = 0.0, offy = 0.0, ratio = 1.0, warp = 2.0;
 
 static GLuint elements[] = {0, 1, 2, 1, 2, 3};
 static float vertices[] = {
@@ -53,6 +53,7 @@ static ShaderSource fragmentShaderSource = {
     "#version 150 core\n"
     "in vec2 coord;"
     "out vec4 outColor;"
+    "uniform float warp;"
     "uniform int niter;"
     "void main() {"
       "float a = 0;"
@@ -64,7 +65,7 @@ static ShaderSource fragmentShaderSource = {
       "int i = 0;"
       "while (i < niter && a*a + b*b < 2*2) {"
         "an = a*a - b*b + u;"
-        "b = 2*a*b + v;"
+        "b = warp*a*b + v;"
         "a = an;"
         "i += 1;"
       "}"
@@ -133,6 +134,7 @@ static void setup() {
   offxAttr = glGetUniformLocation(drawProgram, "offx");
   offyAttr = glGetUniformLocation(drawProgram, "offy");
   niterAttr = glGetUniformLocation(drawProgram, "niter");
+  warpAttr = glGetUniformLocation(drawProgram, "warp");
   ratioAttr = glGetUniformLocation(drawProgram, "ratio");
 }
 
@@ -179,6 +181,7 @@ int main() {
     glUniform1f(offyAttr, offy);
     glUniform1i(niterAttr, niter);
     glUniform1f(ratioAttr, ratio);
+    glUniform1f(warpAttr, warp);
     glBindVertexArray(vao);
     glActiveTexture(GL_TEXTURE0);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -203,6 +206,8 @@ int main() {
         niter = 5;
       }
     }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) warp += 0.05 * speedFactor;
+    if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) warp -= 0.05 * speedFactor;
     if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) zoom *= pow(1.1, speedFactor);
     if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) zoom /= pow(1.1, speedFactor);
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {

@@ -56,7 +56,9 @@ Depends on `libglfw3-dev`, `libgl1-mesa-dev`, `libglu1-mesa-dev`.
 
 <kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> Move<br>
 <kbd>+</kbd>/<kbd>-</kbd> Zoom<br>
-<kbd>Q</kbd> Quit
+<kbd>Q</kbd> Quit<br>
+<kbd>[</kbd>/<kbd>]</kbd> Warp<br>
+<kbd>;</kbd> Increase max iteration count
 
 # ExMedia
 
